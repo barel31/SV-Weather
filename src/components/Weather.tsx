@@ -7,6 +7,11 @@ import {
 import WeatherForecast from './WeatherForecast';
 import { useNavigate, useParams } from 'react-router-dom';
 
+type Props = {
+  toggleFavorite: (cityKey: string, cityName: string) => void;
+  isFavorite: (cityKey: string) => boolean;
+};
+
 type WeatherData = {
   weatherText: string;
   weatherTemp: number;
@@ -15,15 +20,11 @@ type WeatherData = {
   forecast: { [key: string]: { temp: string } };
 };
 
-function Weather({
-  toggleFavorite,
-  isFavorite,
-}: {
-  toggleFavorite: (cityKey: string, cityName: string) => void;
-  isFavorite: (cityKey: string) => boolean;
-}) {
-  const { cityName } = useParams<{ cityName: string }>();
+const defaultCityName = 'Tel Aviv';
 
+function Weather({ toggleFavorite, isFavorite }: Props) {
+  const { cityName } = useParams<{ cityName: string }>();
+  
   const navigate = useNavigate();
 
   const [data, setData] = useState<WeatherData>({
@@ -43,11 +44,14 @@ function Weather({
       if (!res) throw new Error('City not found');
       const { cityKey, cityName } = res;
 
-      // get weather from cityKey
+      // get weather with cityKey
       const cityWeatherResult = await getCityWeather(cityKey);
-      const { weatherText, weatherTemp } = cityWeatherResult!;
+      if (!cityWeatherResult) {
+        throw new Error(`Cannot get weather data from city key ${cityKey}`);
+      }
+      const { weatherText, weatherTemp } = cityWeatherResult;
 
-      // get weather forecast from cityKey
+      // get weather forecast with cityKey
       const forecast = (await getCityWeatherFiveDays(
         cityKey
       )) as WeatherData['forecast'];
@@ -73,7 +77,8 @@ function Weather({
   // Search for tel aviv on first load
   useEffect(() => {
     (async () => {
-      const res = loadData(cityName ? cityName : 'Tel Aviv', false);
+      const res = await loadData(cityName || defaultCityName, false);
+      // const res = await loadData(cityName ? cityName : 'Tel Aviv', false);
       if (!res) navigate('../');
     })();
   }, []);
@@ -83,18 +88,22 @@ function Weather({
     loadData(ref.current!.value);
   };
 
-  const toggleFav = () => toggleFavorite(data.cityKey, data.cityName);
+  const toggleFav = () => {
+    if (data.cityKey) {
+      toggleFavorite(data.cityKey, data.cityName);
+    }
+  };
 
   return (
     <main className="flex flex-col gap-10">
       <h2>Weather</h2>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} className="flex gap-4 m-auto">
         <input
           ref={ref}
           type="text"
           placeholder="City Name"
-          className="p-1 rounded-sm"
-          defaultValue="Tel Aviv"
+          className="px-4 rounded-sm center w-full"
+          defaultValue={defaultCityName}
         />
         <button type="submit">Search</button>
       </form>

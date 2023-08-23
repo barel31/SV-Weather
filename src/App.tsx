@@ -1,4 +1,3 @@
-import './App.css';
 import { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
@@ -30,7 +29,7 @@ function App() {
     Object.keys(favorites).includes(cityKey);
 
   return (
-    <div className="App min-h-full">
+    <div className="min-h-full p-10">
       <Router>
         <NavBar />
 
