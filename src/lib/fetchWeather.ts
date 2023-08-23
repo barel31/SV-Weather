@@ -1,7 +1,7 @@
 export const searchCityWeather = async (city: string) => {
   try {
     const response = await fetch(
-      `http://dataservice.accuweather.com/locations/v1/cities/search?apikey=${
+      `https://dataservice.accuweather.com/locations/v1/cities/search?apikey=${
         import.meta.env.VITE_ACCUWEATHER_KEY
       }&q=${city}&lanuage=en-us&details=false`
     );
@@ -24,7 +24,7 @@ export const searchCityWeather = async (city: string) => {
 export const getCityWeather = async (cityKey: string) => {
   try {
     const response = await fetch(
-      `http://dataservice.accuweather.com/currentconditions/v1/${cityKey}?apikey=${
+      `https://dataservice.accuweather.com/currentconditions/v1/${cityKey}?apikey=${
         import.meta.env.VITE_ACCUWEATHER_KEY
       }&language=en-us&details=false`
     );
@@ -45,7 +45,7 @@ export const getCityWeather = async (cityKey: string) => {
 export const getCityWeatherFiveDays = async (cityKey: string) => {
   try {
     const response = await fetch(
-      `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${cityKey}?apikey=${
+      `https://dataservice.accuweather.com/forecasts/v1/daily/5day/${cityKey}?apikey=${
         import.meta.env.VITE_ACCUWEATHER_KEY
       }&language=en-us&details=false&metric=true`
     );
