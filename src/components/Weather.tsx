@@ -24,16 +24,11 @@ const defaultCityName = 'Tel Aviv';
 
 function Weather({ toggleFavorite, isFavorite }: Props) {
   const { cityName } = useParams<{ cityName: string }>();
-  
+
   const navigate = useNavigate();
 
-  const [data, setData] = useState<WeatherData>({
-    cityName: '',
-    weatherText: '',
-    weatherTemp: 0,
-    cityKey: '',
-    forecast: {},
-  });
+  const [data, setData] = useState<WeatherData>();
+  const [error, setError] = useState<string | undefined>();
 
   const ref = useRef<HTMLInputElement>(null);
 
@@ -41,7 +36,7 @@ function Weather({ toggleFavorite, isFavorite }: Props) {
     try {
       // get cityName and cityKey from search
       const res = await searchCityWeather(city);
-      if (!res) throw new Error('City not found');
+      if (!res) throw new Error(`City ${city} not found`);
       const { cityKey, cityName } = res;
 
       // get weather with cityKey
@@ -64,11 +59,16 @@ function Weather({ toggleFavorite, isFavorite }: Props) {
         cityKey,
         forecast,
       }));
+      setError(undefined);
 
       if (redirect) navigate(`../${cityName}`);
       return true;
     } catch (err) {
       console.log(err);
+      if (err instanceof Error) {
+        setError(err.message);
+      }
+      setData(undefined);
       navigate('../');
       return false;
     }
@@ -78,7 +78,6 @@ function Weather({ toggleFavorite, isFavorite }: Props) {
   useEffect(() => {
     (async () => {
       const res = await loadData(cityName || defaultCityName, false);
-      // const res = await loadData(cityName ? cityName : 'Tel Aviv', false);
       if (!res) navigate('../');
     })();
   }, []);
@@ -89,39 +88,54 @@ function Weather({ toggleFavorite, isFavorite }: Props) {
   };
 
   const toggleFav = () => {
-    if (data.cityKey) {
+    if ('cityName' in data!) {
       toggleFavorite(data.cityKey, data.cityName);
     }
   };
 
   return (
-    <main className="flex flex-col gap-10">
-      <h2>Weather</h2>
-      <form onSubmit={onSubmit} className="flex gap-4 m-auto">
+    <main className="flex flex-col gap-10 justify-center">
+      <h2 className="text-center">Weather</h2>
+      <form
+        onSubmit={onSubmit}
+        className="flex gap-4 m-auto flex-wrap w-full justify-center">
         <input
           ref={ref}
           type="text"
           placeholder="City Name"
-          className="px-4 rounded-sm center w-full"
+          className="px-4 py-3 rounded-sm"
           defaultValue={defaultCityName}
         />
-        <button type="submit">Search</button>
+        <button type="submit" className="border-slate-600">
+          Search
+        </button>
       </form>
+      <span className="text-red-500 text-center bottom-5 relative">
+        {error}
+      </span>
 
       {/* City Weather Info */}
-      <h1>{data.cityName || 'Loading...'}</h1>
+      <div className="city-weather-info text-center">
+        <h1 className="m-auto">
+          {data?.cityName || (error && 'Error') || 'Loading...'}
+        </h1>
 
-      <div className="flex gap-6 m-auto">
-        <h2 className="text-2xl">{data.weatherText}</h2>
-        <h2 className="text-2xl">{data.weatherTemp}°C</h2>
+        <div className="flex gap-6 mt-2 justify-center">
+          <h2 className="text-2xl">
+            {data?.weatherText || (error && 'Error') || 'No weather data'}
+          </h2>
+          <h2 className="text-2xl">{data?.weatherTemp || 0}°C</h2>
+        </div>
+
+        <button
+          onClick={toggleFav}
+          className="m-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none"
+          disabled={!data}>
+          {data && isFavorite(data.cityKey) ? 'Remove From' : 'Add To'} Favorite
+        </button>
+
+        {data?.forecast && <WeatherForecast forecast={data.forecast} />}
       </div>
-
-      <button onClick={toggleFav}>
-        {isFavorite(data.cityKey) ? 'Remove From' : 'Add To'} Favorite
-      </button>
-
-      {/* City Weather forecast */}
-      {data.forecast && <WeatherForecast forecast={data.forecast} />}
     </main>
   );
 }

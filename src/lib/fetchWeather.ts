@@ -17,7 +17,7 @@ export const searchCityWeather = async (city: string) => {
     return { cityKey, cityName };
     // return searchCityWeatherTemped;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
@@ -38,7 +38,7 @@ export const getCityWeather = async (cityKey: string) => {
     return { weatherText, weatherTemp };
     // return getCityWeatherTemped;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
@@ -76,7 +76,7 @@ export const getCityWeatherFiveDays = async (cityKey: string) => {
     return forecast;
     // return getCityWeatherFiveDaysTemped;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

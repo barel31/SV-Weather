@@ -29,7 +29,7 @@ function App() {
     Object.keys(favorites).includes(cityKey);
 
   return (
-    <div className="min-h-full p-10">
+    <div className="min-h-full p-4">
       <Router>
         <NavBar />
 
