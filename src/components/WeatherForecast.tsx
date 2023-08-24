@@ -5,7 +5,7 @@ type Props = {
 
 function WeatherForecast({ forecast }: Props) {
   return (
-    <div className="flex flex-row overflow-auto">
+    <div className="flex flex-row overflow-auto md:justify-center">
       {forecast &&
         Object.keys(forecast).map((cityName, i) => (
           <div
