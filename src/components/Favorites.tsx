@@ -45,16 +45,16 @@ function Favorites({ favorites }: Props) {
       <h2 className="text-center m-4">Favorites Cities</h2>
       {data ? (
         <div className="grid grid-cols-3 gap-6">
-          {Object.keys(data).map((cityCode, i) => (
+          {Object.keys(data).map((cityName, i) => (
             <div
               key={i}
               className="text-center border border-slate-500 p-4 cursor-pointer min-w-min rounded-xl hover:shadow-xl hover:border-[#646cff] hover:-translate-y-1 transition duration-75 hover:scale-105"
-              onClick={() => navigate(`/${cityCode}`)}>
+              onClick={() => navigate(`/${cityName}`)}>
               <h1 className="text-base md:text-2xl lg:text-3xl break-all font-semibold">
-                {cityCode}
+                {cityName}
               </h1>
               <h1 className="text-base md:text-2xl lg:text-3xl break-words leading-loose italic">
-                {data[cityCode]}°C
+                {data[cityName]}°C
               </h1>
             </div>
           ))}
