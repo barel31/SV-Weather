@@ -103,7 +103,7 @@ function Weather({ toggleFavorite, isFavorite }: Props) {
           ref={ref}
           type="text"
           placeholder="City Name"
-          className="px-4 py-3 rounded-sm"
+          className="px-4 py-3 rounded-sm bg-[#3B3B3B]"
           defaultValue={defaultCityName}
         />
         <button type="submit" className="border-slate-600">
