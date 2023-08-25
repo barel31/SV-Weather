@@ -1,4 +1,10 @@
-import { useRef, useState, useEffect } from 'react';
+import {
+  useRef,
+  useEffect,
+  useState,
+  type Dispatch,
+  type ReducerAction,
+} from 'react';
 import {
   getCityWeather,
   getCityWeatherFiveDays,
@@ -6,10 +12,12 @@ import {
 } from '../lib/fetchWeather';
 import WeatherForecast from './WeatherForecast';
 import { useNavigate, useParams } from 'react-router-dom';
+import reducer from '@/lib/reducer';
+import { setData, setError, toggleFavorite } from '@/lib/actions';
 
 type Props = {
-  toggleFavorite: (cityKey: string, cityName: string) => void;
-  isFavorite: (cityKey: string) => boolean;
+  state: ReturnType<typeof reducer>;
+  dispatch: Dispatch<ReducerAction<typeof reducer>>;
 };
 
 type WeatherData = {
@@ -22,13 +30,12 @@ type WeatherData = {
 
 const defaultCityName = 'Tel Aviv';
 
-function Weather({ toggleFavorite, isFavorite }: Props) {
+// function Weather({ dis, isFavorite }: Props) {
+function Weather({ state, dispatch }: Props) {
   const { cityName } = useParams<{ cityName: string }>();
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const navigate = useNavigate();
-
-  const [data, setData] = useState<WeatherData>();
-  const [error, setError] = useState<string | undefined>();
 
   const ref = useRef<HTMLInputElement>(null);
 
@@ -51,24 +58,17 @@ function Weather({ toggleFavorite, isFavorite }: Props) {
         cityKey
       )) as WeatherData['forecast'];
       // save data to state
-      setData((state) => ({
-        ...state,
-        weatherText,
-        weatherTemp,
-        cityName,
-        cityKey,
-        forecast,
-      }));
-      setError(undefined);
+      dispatch(
+        setData({ weatherText, weatherTemp, cityName, cityKey, forecast })
+      );
 
       if (redirect) navigate(`../${cityName}`);
       return true;
     } catch (err) {
       console.log(err);
       if (err instanceof Error) {
-        setError(err.message);
+        dispatch(setError(err.message));
       }
-      setData(undefined);
       navigate('../');
       return false;
     }
@@ -82,14 +82,20 @@ function Weather({ toggleFavorite, isFavorite }: Props) {
     })();
   }, []);
 
+  useEffect(() => {
+    if (state.data?.cityKey) {
+      setIsFavorite(!state.data.isFavorite!);
+    }
+  }, [state.data]);
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     loadData(ref.current!.value);
   };
 
   const toggleFav = () => {
-    if ('cityName' in data!) {
-      toggleFavorite(data.cityKey, data.cityName);
+    if (state.data?.cityKey) {
+      dispatch(toggleFavorite(state.data?.cityKey, state.data?.cityName));
     }
   };
 
@@ -111,30 +117,34 @@ function Weather({ toggleFavorite, isFavorite }: Props) {
         </button>
       </form>
       <span className="text-red-500 text-center bottom-5 relative">
-        {error}
+        {state.error}
       </span>
 
       {/* City Weather Info */}
       <div className="city-weather-info text-center">
         <h1 className="m-auto">
-          {data?.cityName || (error && 'Error') || 'Loading...'}
+          {state.data?.cityName || (state?.error && 'Error') || 'Loading...'}
         </h1>
 
         <div className="flex gap-6 mt-2 justify-center">
           <h2 className="text-2xl">
-            {data?.weatherText || (error && 'Error') || 'No weather data'}
+            {state.data?.weatherText ||
+              (state?.error && 'Error') ||
+              'No weather data'}
           </h2>
-          <h2 className="text-2xl">{data?.weatherTemp || 0}°C</h2>
+          <h2 className="text-2xl">{state.data?.weatherTemp || 0}°C</h2>
         </div>
 
         <button
           onClick={toggleFav}
           className="m-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none"
-          disabled={!data}>
-          {data && isFavorite(data.cityKey) ? 'Remove From' : 'Add To'} Favorite
+          disabled={!state?.data}>
+          {isFavorite ? 'Remove From' : 'Add To'} Favorite
         </button>
 
-        {data?.forecast && <WeatherForecast forecast={data.forecast} />}
+        {state.data?.forecast && (
+          <WeatherForecast forecast={state.data.forecast} />
+        )}
       </div>
     </main>
   );

@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 import { getCityWeather } from '@/lib/fetchWeather';
 import { useNavigate } from 'react-router-dom';
+import reducer from '@/lib/reducer';
 
 type Props = {
-  favorites: {
-    // cityKey:    cityName
-    [key: string]: string;
-  };
+  favorites: ReturnType<typeof reducer>['favorites'];
 };
 
 type WeatherData = {
@@ -15,9 +13,10 @@ type WeatherData = {
 };
 
 function Favorites({ favorites }: Props) {
+  const [weatherData, setWeatherData] = useState<WeatherData>();
+  console.log(favorites);
+  
   const navigate = useNavigate();
-
-  const [data, setData] = useState<WeatherData>();
 
   useEffect(() => {
     if (!Object.keys(favorites)?.length) return;
@@ -28,12 +27,12 @@ function Favorites({ favorites }: Props) {
         for (const cityKey of Object.keys(favorites)) {
           const response = await getCityWeather(cityKey);
           if (!response) {
-            throw new Error(`Cannot get weather data from cityCode ${cityKey}`);
+            throw new Error(`Cannot get weather data from cityKey ${cityKey}`);
           }
           // create new field in cityList with cityKey as key and temperature as value
           cityList[favorites[cityKey]] = response.weatherTemp;
         }
-        setData(() => cityList);
+        setWeatherData(() => cityList);
       })();
     } catch (error) {
       console.log(error);
@@ -43,9 +42,9 @@ function Favorites({ favorites }: Props) {
   return (
     <main>
       <h2 className="text-center m-4">Favorites Cities</h2>
-      {data ? (
+      {weatherData ? (
         <div className="grid grid-cols-3 gap-6">
-          {Object.keys(data).map((cityName, i) => (
+          {Object.keys(weatherData).map((cityName, i) => (
             <div
               key={i}
               className="text-center border border-slate-500 p-4 cursor-pointer min-w-min rounded-xl hover:shadow-xl hover:border-[#646cff] hover:-translate-y-1 transition duration-75 hover:scale-105"
@@ -54,7 +53,7 @@ function Favorites({ favorites }: Props) {
                 {cityName}
               </h1>
               <h1 className="text-base md:text-2xl lg:text-3xl break-words leading-loose italic">
-                {data[cityName]}°C
+                {weatherData[cityName]}°C
               </h1>
             </div>
           ))}
