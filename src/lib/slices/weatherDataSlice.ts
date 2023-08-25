@@ -1,15 +1,13 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-export interface WeatherDataState {
+export type WeatherDataState = {
   weatherText: string;
   weatherTemp: number;
   cityName: string;
   cityKey: string;
   forecast: { [key: string]: { temp: string } };
-  // isFavorite?: boolean;
   error?: string;
-}
+};
 
 const initialState: WeatherDataState = {
   weatherText: '',
@@ -24,17 +22,15 @@ export const weatherDataSlice = createSlice({
   initialState,
   reducers: {
     setData: (
-      state: WeatherDataState,
+      data: WeatherDataState,
       action: PayloadAction<WeatherDataState>
-    ) => {
-      state = action.payload;
-      return state;
-    },
+    ) => action.payload,
+
     setError: (
-      state: WeatherDataState,
+      data: WeatherDataState,
       action: PayloadAction<string | undefined>
     ) => {
-      state.error = action.payload;
+      data.error = action.payload;
     },
   },
 });

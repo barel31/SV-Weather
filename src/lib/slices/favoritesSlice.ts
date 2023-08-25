@@ -1,9 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-export interface FavoritesState {
+export type FavoritesState = {
   [key: string]: string; // [cityKey: string]: cityName
-}
+};
 
 type ToggleFavoritesAction = {
   cityKey: string;
@@ -17,13 +16,14 @@ export const favoritesSlice = createSlice({
   initialState,
   reducers: {
     toggleFavorite: (
-      state: FavoritesState,
+      favorites: FavoritesState,
       action: PayloadAction<ToggleFavoritesAction>
     ) => {
-      if (Object.keys(state).includes(action.payload.cityKey)) {
-        delete state[action.payload.cityKey];
+      const { cityKey, cityName } = action.payload;
+      if (Object.keys(favorites).includes(cityKey)) {
+        delete favorites[cityKey];
       } else {
-        state[action.payload.cityKey] = action.payload.cityName;
+        favorites[cityKey] = cityName;
       }
     },
   },

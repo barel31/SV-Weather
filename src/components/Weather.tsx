@@ -12,14 +12,6 @@ import { type RootState } from '@/lib/store';
 import { setData, setError } from '@/lib/slices/weatherDataSlice';
 import { toggleFavorite } from '@/lib/slices/favoritesSlice';
 
-type WeatherData = {
-  weatherText: string;
-  weatherTemp: number;
-  cityName: string;
-  cityKey: string;
-  forecast: { [key: string]: { temp: string } };
-};
-
 const defaultCityName = 'Tel Aviv';
 
 function Weather() {
@@ -36,21 +28,19 @@ function Weather() {
   const loadData = async (city: string, redirect = true) => {
     try {
       // get cityName and cityKey from search
-      const res = await searchCityWeather(city);
-      if (!res) throw new Error(`City ${city} not found`);
-      const { cityKey, cityName } = res;
+      const result = await searchCityWeather(city);
+      if (result instanceof Error) throw result;
+      const { cityKey, cityName } = result;
 
       // get weather with cityKey
       const cityWeatherResult = await getCityWeather(cityKey);
-      if (!cityWeatherResult) {
-        throw new Error(`Cannot get weather data from city key ${cityKey}`);
-      }
+      if (cityWeatherResult instanceof Error) throw result;
+
       const { weatherText, weatherTemp } = cityWeatherResult;
 
       // get weather forecast with cityKey
-      const forecast = (await getCityWeatherFiveDays(
-        cityKey
-      )) as WeatherData['forecast'];
+      const forecast = await getCityWeatherFiveDays(cityKey);
+      if (forecast instanceof Error) throw result;
       // save data to state
       dispatch(
         setData({ weatherText, weatherTemp, cityName, cityKey, forecast })
@@ -58,12 +48,12 @@ function Weather() {
 
       if (redirect) navigate(`../${cityName}`);
       return true;
-    } catch (err) {
-      console.log(err);
-      if (err instanceof Error) {
-        dispatch(setError(err.message));
-      }
-      navigate('../');
+    } catch (error) {
+      console.error(error);
+      if (error instanceof Error) dispatch(setError(error.message));
+      else dispatch(setError('Something went wrong'));
+
+      if (redirect) navigate('../');
       return false;
     }
   };
@@ -71,9 +61,10 @@ function Weather() {
   // Search for tel aviv on first load
   useEffect(() => {
     (async () => {
-      const res = await loadData(cityName || defaultCityName, false);
-      if (!res) navigate('../');
+      const response = await loadData(cityName || defaultCityName, false);
+      if (!response) navigate('../');
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -91,49 +82,49 @@ function Weather() {
   const isFav = () => !!favorites[data?.cityKey];
 
   return (
-    <main className="flex flex-col gap-10 justify-center">
-      <h2 className="text-center">Weather</h2>
-      <form
-        onSubmit={onSubmit}
-        className="flex gap-4 m-auto flex-wrap w-full justify-center">
-        <input
-          ref={ref}
-          type="text"
-          placeholder="City Name"
-          className="px-4 py-3 rounded-sm bg-[#3B3B3B]"
-          defaultValue={cityName || defaultCityName}
-        />
-        <button type="submit" className="border-slate-600">
-          Search
-        </button>
-      </form>
-      <span className="text-red-500 text-center bottom-5 relative">
-        {data?.error}
-      </span>
+    <div>
+      <h2>Weather</h2>
 
-      {/* City Weather Info */}
-      <div className="city-weather-info text-center">
-        <h1 className="m-auto">
-          {data?.cityName || (data?.error && 'Error') || 'Loading...'}
-        </h1>
+      <div className="flex flex-col gap-10 justify-center">
+        <form
+          onSubmit={onSubmit}
+          className="flex gap-4 flex-wrap w-full justify-center">
+          <input
+            ref={ref}
+            type="text"
+            placeholder="City Name"
+            className="px-4 py-3 rounded-sm bg-[#3B3B3B]"
+            defaultValue={cityName || defaultCityName}
+          />
+          <button type="submit" className="border-slate-600">
+            Search
+          </button>
+        </form>
+        <span className="text-red-500 bottom-5 relative">{data?.error}</span>
 
-        <div className="flex gap-6 mt-2 justify-center">
-          <h2 className="text-2xl">
-            {data?.weatherText || (data?.error && 'Error') || 'No weather data'}
-          </h2>
-          <h2 className="text-2xl">{data?.weatherTemp || 0}°C</h2>
+        {/* City Weather Info */}
+        <div className="city-weather-info">
+          <h1>{data?.cityName || data?.error || 'Loading...'}</h1>
+
+          <div className="flex gap-6 mt-2 justify-center">
+            <h2 className="text-2xl">
+              {data?.weatherText || data?.error || 'No weather data'}
+            </h2>
+            <h2 className="text-2xl">{data?.weatherTemp || 0}°C</h2>
+          </div>
+
+          <button
+            onClick={toggleFav}
+            className="m-4 border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-slate-600"
+            disabled={!data?.cityKey}
+            type="button">
+            {isFav() ? 'Remove From' : 'Add To'} Favorite
+          </button>
+
+          {data?.forecast && <WeatherForecast forecast={data.forecast} />}
         </div>
-
-        <button
-          onClick={toggleFav}
-          className="m-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none"
-          disabled={!data}>
-          {isFav() ? 'Remove From' : 'Add To'} Favorite
-        </button>
-
-        {data?.forecast && <WeatherForecast forecast={data.forecast} />}
       </div>
-    </main>
+    </div>
   );
 }
 

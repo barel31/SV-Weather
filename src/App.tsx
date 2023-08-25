@@ -6,7 +6,7 @@ import Weather from './components/Weather';
 
 function App() {
   return (
-    <div className="min-h-full p-4">
+    <main className="min-h-full p-4 text-center">
       <Router>
         <NavBar />
 
@@ -16,7 +16,7 @@ function App() {
           <Route path="/favorites" element={<Favorites />} />
         </Routes>
       </Router>
-    </div>
+    </main>
   );
 }
 

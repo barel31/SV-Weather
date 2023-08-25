@@ -17,7 +17,8 @@ export const searchCityWeather = async (city: string) => {
     //   cityName: searchCityWeatherTemped[0].EnglishName,
     // };
   } catch (error) {
-    console.error(error);
+    if (error instanceof Error) return error;
+    else return new Error('Something went wrong');
   }
 };
 
@@ -41,7 +42,8 @@ export const getCityWeather = async (cityKey: string) => {
     //   weatherTemp: getCityWeatherTemped[0].Temperature.Metric.Value,
     // };
   } catch (error) {
-    console.error(error);
+    if (error instanceof Error) return error;
+    else return new Error('Something went wrong');
   }
 };
 
@@ -80,7 +82,8 @@ export const getCityWeatherFiveDays = async (cityKey: string) => {
     return forecast;
     // return getCityWeatherFiveDaysTemp;
   } catch (error) {
-    console.error(error);
+    if (error instanceof Error) return error;
+    else return new Error('Something went wrong');
   }
 };
 
@@ -533,7 +536,7 @@ const getCityWeatherTemp = [
   },
 ];
 
-const getCityWeatherFiveDaysTemp= {
+const getCityWeatherFiveDaysTemp = {
   Headline: {
     EffectiveDate: '2023-08-22T14:00:00+03:00',
     EffectiveEpochDate: 1692702000,
