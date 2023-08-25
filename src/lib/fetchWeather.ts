@@ -13,8 +13,8 @@ export const searchCityWeather = async (city: string) => {
 
     return { cityKey, cityName };
     // return {
-    //   Key: searchCityWeatherTemped[0].Key,
-    //   EnglishName: searchCityWeatherTemped[0].EnglishName,
+    //   cityKey: searchCityWeatherTemped[0].Key,
+    //   cityName: searchCityWeatherTemped[0].EnglishName,
     // };
   } catch (error) {
     console.error(error);
@@ -37,7 +37,7 @@ export const getCityWeather = async (cityKey: string) => {
 
     return { weatherText, weatherTemp };
     // return {
-    //   WeatherText: getCityWeatherTemped[0],
+    //   weatherText: getCityWeatherTemped[0].WeatherText,
     //   weatherTemp: getCityWeatherTemped[0].Temperature.Metric.Value,
     // };
   } catch (error) {
@@ -63,6 +63,7 @@ export const getCityWeatherFiveDays = async (cityKey: string) => {
         Maximum: { Value: number };
       };
     };
+    // const data = getCityWeatherFiveDaysTemp;
     data.DailyForecasts.forEach((day: DailyForecast, i: number) => {
       // get day from date
       const dayName = new Date(data.DailyForecasts[i].Date).toLocaleDateString(
@@ -77,13 +78,13 @@ export const getCityWeatherFiveDays = async (cityKey: string) => {
     });
 
     return forecast;
-    // return getCityWeatherFiveDaysTemped;
+    // return getCityWeatherFiveDaysTemp;
   } catch (error) {
     console.error(error);
   }
 };
 
-const searchCityWeatherTemped = [
+const searchCityWeatherTemp = [
   {
     Version: 1,
     Key: '215854',
@@ -148,7 +149,7 @@ const searchCityWeatherTemped = [
   },
 ];
 
-const getCityWeatherTemped = [
+const getCityWeatherTemp = [
   {
     LocalObservationDateTime: '2023-08-22T15:22:00+03:00',
     EpochTime: 1692706920,
@@ -532,7 +533,7 @@ const getCityWeatherTemped = [
   },
 ];
 
-const getCityWeatherFiveDaysTemped = {
+const getCityWeatherFiveDaysTemp= {
   Headline: {
     EffectiveDate: '2023-08-22T14:00:00+03:00',
     EffectiveEpochDate: 1692702000,

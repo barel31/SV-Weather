@@ -1,24 +1,16 @@
-import {
-  useRef,
-  useEffect,
-  useState,
-  type Dispatch,
-  type ReducerAction,
-} from 'react';
+import { useRef, useEffect } from 'react';
 import {
   getCityWeather,
   getCityWeatherFiveDays,
   searchCityWeather,
-} from '../lib/fetchWeather';
+} from '@/lib/fetchWeather';
 import WeatherForecast from './WeatherForecast';
 import { useNavigate, useParams } from 'react-router-dom';
-import reducer from '@/lib/reducer';
-import { setData, setError, toggleFavorite } from '@/lib/actions';
 
-type Props = {
-  state: ReturnType<typeof reducer>;
-  dispatch: Dispatch<ReducerAction<typeof reducer>>;
-};
+import { useDispatch, useSelector } from 'react-redux';
+import { type RootState } from '@/lib/store';
+import { setData, setError } from '@/lib/slices/weatherDataSlice';
+import { toggleFavorite } from '@/lib/slices/favoritesSlice';
 
 type WeatherData = {
   weatherText: string;
@@ -30,10 +22,12 @@ type WeatherData = {
 
 const defaultCityName = 'Tel Aviv';
 
-// function Weather({ dis, isFavorite }: Props) {
-function Weather({ state, dispatch }: Props) {
+function Weather() {
+  const dispatch = useDispatch();
+  const data = useSelector((state: RootState) => state.data);
+  const favorites = useSelector((state: RootState) => state.favorites);
+
   const { cityName } = useParams<{ cityName: string }>();
-  const [isFavorite, setIsFavorite] = useState(false);
 
   const navigate = useNavigate();
 
@@ -82,22 +76,19 @@ function Weather({ state, dispatch }: Props) {
     })();
   }, []);
 
-  useEffect(() => {
-    if (state.data?.cityKey) {
-      setIsFavorite(!state.data.isFavorite!);
-    }
-  }, [state.data]);
-
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     loadData(ref.current!.value);
   };
 
   const toggleFav = () => {
-    if (state.data?.cityKey) {
-      dispatch(toggleFavorite(state.data?.cityKey, state.data?.cityName));
+    if (data?.cityKey) {
+      const { cityKey, cityName } = data;
+      dispatch(toggleFavorite({ cityKey, cityName }));
     }
   };
+
+  const isFav = () => !!favorites[data?.cityKey];
 
   return (
     <main className="flex flex-col gap-10 justify-center">
@@ -110,41 +101,37 @@ function Weather({ state, dispatch }: Props) {
           type="text"
           placeholder="City Name"
           className="px-4 py-3 rounded-sm bg-[#3B3B3B]"
-          defaultValue={defaultCityName}
+          defaultValue={cityName || defaultCityName}
         />
         <button type="submit" className="border-slate-600">
           Search
         </button>
       </form>
       <span className="text-red-500 text-center bottom-5 relative">
-        {state.error}
+        {data?.error}
       </span>
 
       {/* City Weather Info */}
       <div className="city-weather-info text-center">
         <h1 className="m-auto">
-          {state.data?.cityName || (state?.error && 'Error') || 'Loading...'}
+          {data?.cityName || (data?.error && 'Error') || 'Loading...'}
         </h1>
 
         <div className="flex gap-6 mt-2 justify-center">
           <h2 className="text-2xl">
-            {state.data?.weatherText ||
-              (state?.error && 'Error') ||
-              'No weather data'}
+            {data?.weatherText || (data?.error && 'Error') || 'No weather data'}
           </h2>
-          <h2 className="text-2xl">{state.data?.weatherTemp || 0}°C</h2>
+          <h2 className="text-2xl">{data?.weatherTemp || 0}°C</h2>
         </div>
 
         <button
           onClick={toggleFav}
           className="m-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-none"
-          disabled={!state?.data}>
-          {isFavorite ? 'Remove From' : 'Add To'} Favorite
+          disabled={!data}>
+          {isFav() ? 'Remove From' : 'Add To'} Favorite
         </button>
 
-        {state.data?.forecast && (
-          <WeatherForecast forecast={state.data.forecast} />
-        )}
+        {data?.forecast && <WeatherForecast forecast={data.forecast} />}
       </div>
     </main>
   );

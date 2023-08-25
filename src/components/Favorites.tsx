@@ -1,21 +1,19 @@
 import { useEffect, useState } from 'react';
 import { getCityWeather } from '@/lib/fetchWeather';
 import { useNavigate } from 'react-router-dom';
-import reducer from '@/lib/reducer';
-
-type Props = {
-  favorites: ReturnType<typeof reducer>['favorites'];
-};
+import { useSelector } from 'react-redux';
+import { type RootState } from '@/lib/store';
 
 type WeatherData = {
   // cityName:   temperature
   [key: string]: number;
 };
 
-function Favorites({ favorites }: Props) {
+function Favorites() {
+  const favorites = useSelector((state: RootState) => state.favorites);
+
   const [weatherData, setWeatherData] = useState<WeatherData>();
-  console.log(favorites);
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
