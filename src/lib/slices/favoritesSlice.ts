@@ -9,7 +9,9 @@ type ToggleFavoritesAction = {
   cityName: string;
 };
 
-const initialState: FavoritesState = {};
+const initialState: FavoritesState = {
+  // ['215854']: 'Tel Aviv',
+};
 
 export const favoritesSlice = createSlice({
   name: 'favorites',

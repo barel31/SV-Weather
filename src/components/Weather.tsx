@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import {
   getCityWeather,
   getCityWeatherFiveDays,
@@ -12,8 +12,6 @@ import { type RootState } from '@/lib/store';
 import { setData, setError } from '@/lib/slices/weatherDataSlice';
 import { toggleFavorite } from '@/lib/slices/favoritesSlice';
 
-const defaultCityName = 'Tel Aviv';
-
 function Weather() {
   const dispatch = useDispatch();
   const data = useSelector((state: RootState) => state.data);
@@ -25,47 +23,50 @@ function Weather() {
 
   const ref = useRef<HTMLInputElement>(null);
 
-  const loadData = async (city: string, redirect = true) => {
-    try {
-      // get cityName and cityKey from search
-      const result = await searchCityWeather(city);
-      if (result instanceof Error) throw result;
-      const { cityKey, cityName } = result;
+  const loadData = useCallback(
+    async (city: string, redirect = true) => {
+      try {
+        // get cityName and cityKey from search
+        const result = await searchCityWeather(city);
+        if (result instanceof Error) throw result;
+        const { cityKey, cityName } = result;
 
-      // get weather with cityKey
-      const cityWeatherResult = await getCityWeather(cityKey);
-      if (cityWeatherResult instanceof Error) throw result;
+        // get weather with cityKey
+        const cityWeatherResult = await getCityWeather(cityKey);
+        if (cityWeatherResult instanceof Error) throw result;
 
-      const { weatherText, weatherTemp } = cityWeatherResult;
+        const { weatherText, weatherTemp } = cityWeatherResult;
 
-      // get weather forecast with cityKey
-      const forecast = await getCityWeatherFiveDays(cityKey);
-      if (forecast instanceof Error) throw result;
-      // save data to state
-      dispatch(
-        setData({ weatherText, weatherTemp, cityName, cityKey, forecast })
-      );
+        // get weather forecast with cityKey
+        const forecast = await getCityWeatherFiveDays(cityKey);
+        if (forecast instanceof Error) throw result;
+        // save data to state
+        dispatch(
+          setData({ weatherText, weatherTemp, cityName, cityKey, forecast })
+        );
 
-      if (redirect) navigate(`../${cityName}`);
-      return true;
-    } catch (error) {
-      console.error(error);
-      if (error instanceof Error) dispatch(setError(error.message));
-      else dispatch(setError('Something went wrong'));
+        if (redirect) navigate(`../${cityName}`);
+        return true;
+      } catch (error) {
+        console.error(error);
+        if (error instanceof Error) dispatch(setError(error.message));
+        else dispatch(setError('Something went wrong'));
 
-      if (redirect) navigate('../');
-      return false;
-    }
-  };
+        if (redirect) navigate('../');
+        return false;
+      }
+    },
+    [dispatch, navigate]
+  );
 
   // Search for tel aviv on first load
   useEffect(() => {
     (async () => {
-      const response = await loadData(cityName || defaultCityName, false);
+      if (cityName === data?.cityName) return;
+      const response = await loadData(cityName || data?.cityName, false);
       if (!response) navigate('../');
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [cityName, loadData, navigate, data?.cityName]);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -94,7 +95,7 @@ function Weather() {
             type="text"
             placeholder="City Name"
             className="px-4 py-3 rounded-sm bg-[#3B3B3B]"
-            defaultValue={cityName || defaultCityName}
+            defaultValue={cityName || data?.cityName}
           />
           <button type="submit" className="border-slate-600">
             Search

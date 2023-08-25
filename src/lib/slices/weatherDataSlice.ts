@@ -12,7 +12,7 @@ export type WeatherDataState = {
 const initialState: WeatherDataState = {
   weatherText: '',
   weatherTemp: 0,
-  cityName: '',
+  cityName: 'Tel Aviv',
   cityKey: '',
   forecast: {},
 };
