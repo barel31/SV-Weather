@@ -1,27 +1,45 @@
-# React + TypeScript + Vite
+SV-Weather App
+=================
+This is a simple weather app that uses the AccuWeather API to get the weather of a city, and a forecast for the next 5 days.
+The app is written in JavaScript with the technologies
+* React
+* Redux
+* TailwindCSS
+* TypeScript
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Demo
+A live demo is availble here: https://sv-weather.vercel.app/.
+The app is hosted on Vercel.
 
-Currently, two official plugins are available:
+## Installation
+1. Clone the repo
+   ```sh
+   git clone
+   ```
+2. Install NPM packages
+   ```sh
+   npm install
+   ```
+3. Run the app
+   ```sh
+   npm start
+   ```
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## API Key
+You will need to get an API key from AccuWeather to use the app. You can get one [here](https://developer.accuweather.com/).
+Insert the key in the .env file in the root of the project.
 
-## Expanding the ESLint configuration
+<!-- CONTACT -->
+## Contact
+Barel Shraga -
+[LinkedIn](https://www.linkedin.com/in/barel-shraga//) -
+[Email](mailto:barel123133@gmail.com)
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+<!-- ACKNOWLEDGEMENTS -->
+## Acknowledgements
+* [React](https://reactjs.org/)
+* [Redux](https://redux.js.org/)
+* [TailwindCSS](https://tailwindcss.com/)
+* [TypeScript](https://www.typescriptlang.org/)
+* [AccuWeather](https://developer.accuweather.com/)
+* [Vercel](https://vercel.com/)
