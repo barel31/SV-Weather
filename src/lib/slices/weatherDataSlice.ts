@@ -1,20 +1,16 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 export type WeatherDataState = {
-  weatherText: string;
-  weatherTemp: number;
+  weatherText?: string;
+  weatherTemp?: number;
   cityName: string;
-  cityKey: string;
-  forecast: { [key: string]: { temp: string } };
+  cityKey?: string;
+  forecast?: { [key: string]: { temp: string } };
   error?: string;
 };
 
 const initialState: WeatherDataState = {
-  weatherText: '',
-  weatherTemp: 0,
   cityName: 'Tel Aviv',
-  cityKey: '',
-  forecast: {},
 };
 
 export const weatherDataSlice = createSlice({

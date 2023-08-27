@@ -40,9 +40,10 @@ function Weather() {
         // get weather forecast with cityKey
         const forecast = await getCityWeatherFiveDays(cityKey);
         if (forecast instanceof Error) throw result;
+
         // save data to state
         dispatch(
-          setData({ weatherText, weatherTemp, cityName, cityKey, forecast })
+          setData({ cityKey, cityName, weatherText, weatherTemp, forecast })
         );
 
         if (redirect) navigate(`../${cityName}`);
@@ -59,14 +60,16 @@ function Weather() {
     [dispatch, navigate]
   );
 
-  // Search for tel aviv on first load
+  // Load data on mount and when cityName or data.cityName changes
   useEffect(() => {
     (async () => {
+      // if cityName equals data.cityName, skip the call
       if (cityName === data?.cityName) return;
+
       const response = await loadData(cityName || data?.cityName, false);
       if (!response) navigate('../');
     })();
-  }, [cityName, loadData, navigate, data?.cityName]);
+  }, [cityName, loadData, navigate, data.cityName]);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -74,19 +77,19 @@ function Weather() {
   };
 
   const toggleFav = () => {
-    if (data?.cityKey) {
+    if (data.cityKey) {
       const { cityKey, cityName } = data;
       dispatch(toggleFavorite({ cityKey, cityName }));
     }
   };
 
-  const isFav = () => !!favorites[data?.cityKey];
+  const isFav = () => (data.cityKey ? !!favorites[data.cityKey] : false);
 
   return (
     <div>
       <h2>Weather</h2>
 
-      <div className="flex flex-col gap-10 justify-center">
+      <div className="flex flex-col gap-10 justify-center ">
         <form
           onSubmit={onSubmit}
           className="flex gap-4 flex-wrap w-full justify-center">
@@ -95,23 +98,24 @@ function Weather() {
             type="text"
             placeholder="City Name"
             className="px-4 py-3 rounded-sm bg-[#3B3B3B]"
-            defaultValue={cityName || data?.cityName}
+            defaultValue={cityName || data.cityName}
           />
           <button type="submit" className="border-slate-600">
             Search
           </button>
         </form>
-        <span className="text-red-500 bottom-5 relative">{data?.error}</span>
+        {data.error && (
+          <span className="text-red-500 bottom-5">{data.error}</span>
+        )}
 
-        {/* City Weather Info */}
         <div className="city-weather-info">
-          <h1>{data?.cityName || data?.error || 'Loading...'}</h1>
+          <h1>{data.cityName || data.error || 'Loading...'}</h1>
 
           <div className="flex gap-6 mt-2 justify-center">
             <h2 className="text-2xl">
-              {data?.weatherText || data?.error || 'No weather data'}
+              {data.error || data.weatherText || 'No weather data'}
             </h2>
-            <h2 className="text-2xl">{data?.weatherTemp || 0}°C</h2>
+            <h2 className="text-2xl">{data.weatherTemp || 0}°C</h2>
           </div>
 
           <button
@@ -122,7 +126,7 @@ function Weather() {
             {isFav() ? 'Remove From' : 'Add To'} Favorite
           </button>
 
-          {data?.forecast && <WeatherForecast forecast={data.forecast} />}
+          {data.forecast && <WeatherForecast forecast={data.forecast} />}
         </div>
       </div>
     </div>

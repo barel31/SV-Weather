@@ -27,7 +27,7 @@ function Favorites() {
           // create new field in cityList with cityKey as key and temperature as value
           cityList[favorites[cityKey]] = result.weatherTemp;
         }
-        setWeatherData(() => cityList);
+        setWeatherData(cityList);
       })();
     } catch (error) {
       if (error instanceof Error) console.error(error.message);
@@ -49,7 +49,9 @@ function Favorites() {
             {Object.keys(weatherData).map((cityName, i) => (
               <div
                 key={i}
-                className="border border-slate-500 p-4 cursor-pointer min-w-min rounded-xl hover:shadow-xl hover:border-[#646cff] hover:-translate-y-1 transition duration-75 hover:scale-105"
+                className="border border-slate-500 p-4 cursor-pointer min-w-min rounded-xl hover:shadow-xl hover:border-[#646cff] hover:-translate-y-1 transition duration-75 hover:scale-105
+                bg-gradient-to-br from-[#646cff] to-[#a6b1ff]
+                hover:from-[#a6b1ff] hover:to-[#646cff]"
                 onClick={() => navigate(`/${cityName}`)}>
                 <h1 className="text-base md:text-2xl lg:text-3xl break-all font-semibold">
                   {cityName}
