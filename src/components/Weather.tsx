@@ -61,14 +61,8 @@ function Weather() {
 
   // Load data on mount and when cityName or data.cityName changes
   useEffect(() => {
-    (async () => {
-      // if cityName equals data.cityName, skip the call
-      if (cityName === data?.cityName) return;
-
-      const response = await loadData(cityName || data?.cityName, false);
-      if (!response) navigate('../');
-    })();
-  }, [cityName, loadData, navigate, data.cityName]);
+    loadData(cityName || data.cityName!, false);
+  }, [cityName, loadData, data.cityName]);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -76,7 +70,7 @@ function Weather() {
   };
 
   const toggleFav = () => {
-    if (data.cityKey) {
+    if (data.cityKey && data.cityName) {
       const { cityKey, cityName } = data;
       dispatch(toggleFavorite({ cityKey, cityName }));
     }
@@ -86,7 +80,7 @@ function Weather() {
 
   return (
     <div>
-      <h2>Weather</h2>
+      <h2 className="m-2">Weather</h2>
 
       <div className="flex flex-col gap-10 justify-center ">
         <form
@@ -108,11 +102,11 @@ function Weather() {
         )}
 
         <div className="city-weather-info">
-          <h1>{data.cityName || data.error || 'Loading...'}</h1>
+          <h1>{cityName || data.cityName || data.error || 'Loading...'}</h1>
 
           <div className="flex gap-6 mt-2 justify-center">
             <h2 className="text-2xl">
-              {data.error || data.weatherText || 'No weather data'}
+              {data.weatherText || data.error || 'loading...'}
             </h2>
             <h2 className="text-2xl">{data.weatherTemp || 0}°C</h2>
           </div>
@@ -120,7 +114,7 @@ function Weather() {
           <button
             onClick={toggleFav}
             className="m-4 border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:border-slate-600"
-            disabled={!data?.cityKey}
+            disabled={!data.cityKey}
             type="button">
             {isFav() ? 'Remove From' : 'Add To'} Favorite
           </button>

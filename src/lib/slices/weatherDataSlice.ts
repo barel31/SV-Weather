@@ -3,7 +3,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 export type WeatherDataState = {
   weatherText?: string;
   weatherTemp?: number;
-  cityName: string;
+  cityName?: string;
   cityKey?: string;
   forecast?: { [key: string]: { temp: string } };
   error?: string;
