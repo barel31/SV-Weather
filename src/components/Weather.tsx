@@ -53,7 +53,6 @@ function Weather() {
         if (error instanceof Error) dispatch(setError(error.message));
         else dispatch(setError('Something went wrong'));
 
-        if (redirect) navigate('../');
         return false;
       }
     },

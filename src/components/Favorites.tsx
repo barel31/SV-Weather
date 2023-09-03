@@ -12,7 +12,7 @@ type WeatherData = {
 function Favorites() {
   const favorites = useSelector((state: RootState) => state.favorites);
 
-  const [weatherData, setWeatherData] = useState<WeatherData | undefined>();
+  const [weatherData, setWeatherData] = useState<WeatherData>();
 
   const navigate = useNavigate();
 
