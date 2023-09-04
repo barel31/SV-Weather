@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import Favorites from './components/Favorites';
 import NavBar from './components/NavBar';
-import Weather from './components/Weather';
+import Weather from './components/Weather/WeatherPage';
 
 function App() {
   return (
