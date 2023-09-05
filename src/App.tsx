@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-import Favorites from './components/Favorites';
+import Favorites from './components/Favorites/FavoritesPage';
 import NavBar from './components/NavBar';
 import Weather from './components/Weather/WeatherPage';
 

@@ -1,20 +1,17 @@
 import { useEffect, useState } from 'react';
 import { getCityWeather } from '@/lib/fetchWeather';
-import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { type RootState } from '@/lib/store';
+import FavoriteCard from './FavoriteCard';
 
 type WeatherData = {
   // cityName:   temperature
   [key: string]: number;
 };
 
-function Favorites() {
+function FavoritesPage() {
   const favorites = useSelector((state: RootState) => state.favorites);
-
   const [weatherData, setWeatherData] = useState<WeatherData | Error>();
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -44,6 +41,8 @@ function Favorites() {
 
   return (
     <div>
+      <h2 className="m-2">Favorites Cities</h2>
+
       {weatherData instanceof Error ? (
         <h2 className="text-red-500">Failed to fetch data</h2>
       ) : !weatherData ? (
@@ -51,30 +50,18 @@ function Favorites() {
       ) : !Object.keys(weatherData).length ? (
         <h2>No Favorites Cities</h2>
       ) : (
-        <>
-          <h2 className="m-2">Favorites Cities</h2>
-
-          <div className="grid grid-cols-3 gap-6 p-2">
-            {Object.keys(weatherData).map((cityName, i) => (
-              <div
-                key={i}
-                className="border border-slate-500 p-4 cursor-pointer min-w-min rounded-xl hover:shadow-xl hover:border-[#646cff] hover:-translate-y-1 transition duration-75 hover:scale-105
-                bg-gradient-to-br from-[#646cff] to-[#a6b1ff]
-                hover:from-[#a6b1ff] hover:to-[#646cff]"
-                onClick={() => navigate(`/${cityName}`)}>
-                <h1 className="text-base md:text-2xl lg:text-3xl break-all font-semibold">
-                  {cityName}
-                </h1>
-                <h1 className="text-base md:text-2xl lg:text-3xl break-words leading-loose italic">
-                  {weatherData[cityName]}°C
-                </h1>
-              </div>
-            ))}
-          </div>
-        </>
+        <div className="grid grid-cols-3 gap-6 p-2">
+          {Object.keys(weatherData).map((cityName, i) => (
+            <FavoriteCard
+              i={i}
+              cityName={cityName}
+              temperature={weatherData[cityName]}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
 }
 
-export default Favorites;
+export default FavoritesPage;
