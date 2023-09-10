@@ -5,8 +5,9 @@ import { type RootState } from '@/lib/store';
 import FavoriteCard from './FavoriteCard';
 
 type WeatherData = {
-  // cityName:   temperature
-  [key: string]: number;
+  [cityName: string]: {
+    temperature: number;
+  };
 };
 
 function FavoritesPage() {
@@ -24,7 +25,9 @@ function FavoritesPage() {
             throw result;
           }
           // create new field in cityList with cityKey as key and temperature as value
-          cityList[favorites[cityKey]] = result.weatherTemp;
+          cityList[favorites[cityKey].cityName] = {
+            temperature: result.temperature,
+          };
         }
         setWeatherData(cityList);
       } catch (error) {
@@ -53,9 +56,10 @@ function FavoritesPage() {
         <div className="grid grid-cols-3 gap-6 p-2">
           {Object.keys(weatherData).map((cityName, i) => (
             <FavoriteCard
+              key={i}
               i={i}
               cityName={cityName}
-              temperature={weatherData[cityName]}
+              temperature={weatherData[cityName].temperature}
             />
           ))}
         </div>

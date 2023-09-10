@@ -1,3 +1,5 @@
+import { WeatherDataState } from './slices/weatherDataSlice';
+
 export const searchCityWeather = async (city: string) => {
   // return {
   //   cityKey: searchCityWeatherTemp[0].Key,
@@ -16,7 +18,7 @@ export const searchCityWeather = async (city: string) => {
     }
     const { Key: cityKey, EnglishName: cityName } = data[0];
 
-    return { cityKey, cityName };
+    return { cityKey, cityName } as { cityKey: string; cityName: string };
   } catch (error) {
     if (error instanceof Error) return error;
     else return new Error('Something went wrong');
@@ -39,10 +41,10 @@ export const getCityWeather = async (cityKey: string) => {
     if (!data?.length) {
       throw new Error(`No weather data for cityKey ${cityKey}`);
     }
-    const weatherText = data[0].WeatherText as string;
-    const weatherTemp = data[0].Temperature.Metric.Value as number;
+    const text = data[0].WeatherText as string;
+    const temperature = data[0].Temperature.Metric.Value as number;
 
-    return { weatherText, weatherTemp };
+    return { text, temperature };
   } catch (error) {
     if (error instanceof Error) return error;
     else return new Error('Something went wrong');
@@ -56,17 +58,18 @@ export const getCityWeatherFiveDays = async (cityKey: string) => {
         import.meta.env.VITE_ACCUWEATHER_KEY
       }&language=en-us&details=false&metric=true`
     );
-    const data = await response.json();
+    const data: { DailyForecasts: [DailyForecast] } = await response.json();
     if (!data) throw new Error('No data');
 
-    // get daily forecast and save them to object
-    const forecast = {} as { [key: string]: { temp: string } };
     type DailyForecast = {
+      Date: string;
       Temperature: {
         Minimum: { Value: number };
         Maximum: { Value: number };
       };
     };
+    // get daily forecast and save them to object
+    const forecast = {} as NonNullable<WeatherDataState['forecast']>;
     // const data = getCityWeatherFiveDaysTemp;
     data.DailyForecasts.forEach((day: DailyForecast, i: number) => {
       // get day from date
@@ -77,7 +80,7 @@ export const getCityWeatherFiveDays = async (cityKey: string) => {
 
       // save to object
       forecast[dayName] = {
-        temp: `${day.Temperature.Minimum.Value}°C - ${day.Temperature.Maximum.Value}°C`,
+        temperatureRange: `${day.Temperature.Minimum.Value}°C - ${day.Temperature.Maximum.Value}°C`,
       };
     });
 

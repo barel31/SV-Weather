@@ -1,6 +1,9 @@
 type Props = {
-  //           cityName:     temperature
-  forecast: { [key: string]: { temp: string } };
+  forecast: {
+    [cityName: string]: {
+      temperatureRange: string;
+    };
+  };
 };
 
 function WeatherForecast({ forecast }: Props) {
@@ -14,7 +17,9 @@ function WeatherForecast({ forecast }: Props) {
               !i ? 'border-l' : ''
             } border-slate-900 min-w-[140px]`}>
             <h2 className="text-xl leading-loose">{cityName}</h2>
-            <h2 className='max-md:text-sm'>{forecast[cityName].temp}</h2>
+            <h2 className="max-md:text-sm">
+              {forecast[cityName].temperatureRange}
+            </h2>
           </div>
         ))}
     </div>

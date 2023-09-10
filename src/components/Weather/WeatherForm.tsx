@@ -25,13 +25,15 @@ function WeatherForm({ cityName, data, loadData }: Props) {
         placeholder="City Name"
         className="px-4 py-3 rounded-sm bg-[#3B3B3B]"
         defaultValue={cityName || data.cityName}
+        required
+        pattern="^[a-zA-Z\s]+$"
       />
       <button type="submit" className="border-slate-600">
         Search
       </button>
 
       {data.error && (
-        <span className="text-red-500 bottom-5">{data.error}</span>
+        <span className="text-red-500 bottom-5 w-full">{data.error}</span>
       )}
     </form>
   );

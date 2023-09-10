@@ -31,7 +31,7 @@ function WeatherPage() {
         const cityWeatherResult = await getCityWeather(cityKey);
         if (cityWeatherResult instanceof Error) throw result;
 
-        const { weatherText, weatherTemp } = cityWeatherResult;
+        const { text, temperature } = cityWeatherResult;
 
         // get weather forecast with cityKey
         const forecast = await getCityWeatherFiveDays(cityKey);
@@ -39,7 +39,7 @@ function WeatherPage() {
 
         // save data to state
         dispatch(
-          setData({ cityKey, cityName, weatherText, weatherTemp, forecast })
+          setData({ cityKey, cityName, text, temperature, forecast })
         );
 
         if (redirect) navigate(`../${cityName}`);

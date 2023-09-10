@@ -28,9 +28,9 @@ function WeatherInfo({ cityName, data }: Props) {
 
       <div className="flex gap-6 mt-2 justify-center">
         <h2 className="text-2xl">
-          {data.weatherText || data.error || 'loading...'}
+          {data.text || data.error || 'loading...'}
         </h2>
-        <h2 className="text-2xl">{data.weatherTemp || 0}°C</h2>
+        <h2 className="text-2xl">{data.temperature || 0}°C</h2>
       </div>
 
       <button
