@@ -1,64 +1,22 @@
-import { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-import Favorites from './components/Favorites';
+import Favorites from './components/Favorites/FavoritesPage';
 import NavBar from './components/NavBar';
-import Weather from './components/Weather';
-
-type FavoritesData = {
-  // cityKey:    cityName
-  [key: string]: string;
-};
+import Weather from './components/Weather/WeatherPage';
 
 function App() {
-  const [favorites, setFavorites] = useState<FavoritesData>({});
-
-  const toggleFavorite = (cityKey: string, cityName: string) => {
-    if (!Object.keys(favorites).includes(cityKey)) {
-      setFavorites((state) => ({ ...state, [cityKey]: cityName }));
-    } else {
-      setFavorites((state) => {
-        const stateCopy = { ...state };
-        delete stateCopy[cityKey];
-        return stateCopy;
-      });
-    }
-  };
-
-  const isFavorite = (cityKey: string) =>
-    Object.keys(favorites).includes(cityKey);
-
   return (
-    <div className="min-h-full p-4">
+    <main className="min-h-full p-4 text-center">
       <Router>
         <NavBar />
 
         <Routes>
-          <Route
-            path="/"
-            element={
-              <Weather
-                toggleFavorite={toggleFavorite}
-                isFavorite={isFavorite}
-              />
-            }
-          />
-          <Route
-            path="/:cityName"
-            element={
-              <Weather
-                toggleFavorite={toggleFavorite}
-                isFavorite={isFavorite}
-              />
-            }
-          />
-          <Route
-            path="/favorites"
-            element={<Favorites favorites={favorites} />}
-          />
+          <Route path="/" element={<Weather />} />
+          <Route path="/:cityName" element={<Weather />} />
+          <Route path="/favorites" element={<Favorites />} />
         </Routes>
       </Router>
-    </div>
+    </main>
   );
 }
 

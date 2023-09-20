@@ -1,4 +1,11 @@
+import { WeatherDataState } from './slices/weatherDataSlice';
+
 export const searchCityWeather = async (city: string) => {
+  // return {
+  //   cityKey: searchCityWeatherTemp[0].Key,
+  //   cityName: searchCityWeatherTemp[0].EnglishName,
+  // };
+
   try {
     const response = await fetch(
       `https://dataservice.accuweather.com/locations/v1/cities/search?apikey=${
@@ -9,19 +16,21 @@ export const searchCityWeather = async (city: string) => {
     if (!data?.length) {
       throw new Error(`No data found for city ${city}`);
     }
+    const { Key: cityKey, EnglishName: cityName } = data[0];
 
-    const { Key, EnglishName } = data[0];
-    const cityName = EnglishName as string;
-    const cityKey = Key as string;
-
-    return { cityKey, cityName };
-    // return searchCityWeatherTemped;
+    return { cityKey, cityName } as { cityKey: string; cityName: string };
   } catch (error) {
-    console.error(error);
+    if (error instanceof Error) return error;
+    else return new Error('Something went wrong');
   }
 };
 
 export const getCityWeather = async (cityKey: string) => {
+  // return {
+  //   weatherText: getCityWeatherTemp[0].WeatherText,
+  //   weatherTemp: getCityWeatherTemp[0].Temperature.Metric.Value,
+  // };
+
   try {
     const response = await fetch(
       `https://dataservice.accuweather.com/currentconditions/v1/${cityKey}?apikey=${
@@ -32,13 +41,13 @@ export const getCityWeather = async (cityKey: string) => {
     if (!data?.length) {
       throw new Error(`No weather data for cityKey ${cityKey}`);
     }
-    const weatherText = data[0].WeatherText as string;
-    const weatherTemp = data[0].Temperature.Metric.Value as number;
+    const text = data[0].WeatherText as string;
+    const temperature = data[0].Temperature.Metric.Value as number;
 
-    return { weatherText, weatherTemp };
-    // return getCityWeatherTemped;
+    return { text, temperature };
   } catch (error) {
-    console.error(error);
+    if (error instanceof Error) return error;
+    else return new Error('Something went wrong');
   }
 };
 
@@ -49,17 +58,19 @@ export const getCityWeatherFiveDays = async (cityKey: string) => {
         import.meta.env.VITE_ACCUWEATHER_KEY
       }&language=en-us&details=false&metric=true`
     );
-    const data = await response.json();
+    const data: { DailyForecasts: [DailyForecast] } = await response.json();
     if (!data) throw new Error('No data');
 
-    // get daily forecast and save them to object
-    const forecast = {} as { [key: string]: { temp: string } };
     type DailyForecast = {
+      Date: string;
       Temperature: {
         Minimum: { Value: number };
         Maximum: { Value: number };
       };
     };
+    // get daily forecast and save them to object
+    const forecast = {} as NonNullable<WeatherDataState['forecast']>;
+    // const data = getCityWeatherFiveDaysTemp;
     data.DailyForecasts.forEach((day: DailyForecast, i: number) => {
       // get day from date
       const dayName = new Date(data.DailyForecasts[i].Date).toLocaleDateString(
@@ -69,18 +80,18 @@ export const getCityWeatherFiveDays = async (cityKey: string) => {
 
       // save to object
       forecast[dayName] = {
-        temp: `${day.Temperature.Minimum.Value}°C - ${day.Temperature.Maximum.Value}°C`,
+        temperatureRange: `${day.Temperature.Minimum.Value}°C - ${day.Temperature.Maximum.Value}°C`,
       };
     });
 
     return forecast;
-    // return getCityWeatherFiveDaysTemped;
   } catch (error) {
-    console.error(error);
+    if (error instanceof Error) return error;
+    else return new Error('Something went wrong');
   }
 };
 
-// const searchCityWeatherTemped = [
+// const searchCityWeatherTemp = [
 //   {
 //     Version: 1,
 //     Key: '215854',
@@ -145,7 +156,7 @@ export const getCityWeatherFiveDays = async (cityKey: string) => {
 //   },
 // ];
 
-// const getCityWeatherTemped = [
+// const getCityWeatherTemp = [
 //   {
 //     LocalObservationDateTime: '2023-08-22T15:22:00+03:00',
 //     EpochTime: 1692706920,
@@ -529,7 +540,7 @@ export const getCityWeatherFiveDays = async (cityKey: string) => {
 //   },
 // ];
 
-// const getCityWeatherFiveDaysTemped = {
+// const getCityWeatherFiveDaysTemp = {
 //   Headline: {
 //     EffectiveDate: '2023-08-22T14:00:00+03:00',
 //     EffectiveEpochDate: 1692702000,
