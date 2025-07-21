@@ -22,14 +22,19 @@ function WeatherInfo({ cityName, data }: Props) {
 
   const isFav = () => (data.cityKey ? !!favorites[data.cityKey] : false);
 
+  const info = () => {
+    if (data.countryName && data.cityName) {
+      return `${data.countryName}, ${data.cityName}`;
+    }
+    return 'Loading...';
+  };
+
   return (
     <div className="city-weather-info">
-      <h1>{cityName || data.cityName || data.error || 'Loading...'}</h1>
+      <h1>{info()}</h1>
 
       <div className="flex gap-6 mt-2 justify-center">
-        <h2 className="text-2xl">
-          {data.text || data.error || 'loading...'}
-        </h2>
+        <h2 className="text-2xl">{data.text || data.error || 'loading...'}</h2>
         <h2 className="text-2xl">{data.temperature || 0}°C</h2>
       </div>
 

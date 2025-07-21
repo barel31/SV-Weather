@@ -17,8 +17,13 @@ export const searchCityWeather = async (city: string) => {
       throw new Error(`No data found for city ${city}`);
     }
     const { Key: cityKey, EnglishName: cityName } = data[0];
+    const { EnglishName: countryName } = data[0].Country;
 
-    return { cityKey, cityName } as { cityKey: string; cityName: string };
+    return { cityKey, cityName, countryName } as {
+      cityKey: string;
+      cityName: string;
+      countryName: string;
+    };
   } catch (error) {
     if (error instanceof Error) return error;
     else return new Error('Something went wrong');
