@@ -25,7 +25,7 @@ function WeatherPage() {
         // get cityName and cityKey from search
         const result = await searchCityWeather(city);
         if (result instanceof Error) throw result;
-        const { cityKey, cityName } = result;
+        const { cityKey, cityName, countryName } = result;
 
         // get weather with cityKey
         const cityWeatherResult = await getCityWeather(cityKey);
@@ -39,7 +39,7 @@ function WeatherPage() {
 
         // save data to state
         dispatch(
-          setData({ cityKey, cityName, text, temperature, forecast })
+          setData({ cityKey, cityName, countryName, text, temperature, forecast })
         );
 
         if (redirect) navigate(`../${cityName}`);
