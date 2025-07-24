@@ -5,11 +5,10 @@ import { type WeatherDataState } from '@/lib/slices/weatherDataSlice';
 import { type RootState } from '@/lib/store';
 
 type Props = {
-  cityName?: string;
   data: WeatherDataState;
 };
 
-function WeatherInfo({ cityName, data }: Props) {
+function WeatherInfo({ data }: Props) {
   const dispatch = useDispatch();
   const favorites = useSelector((state: RootState) => state.favorites);
 
